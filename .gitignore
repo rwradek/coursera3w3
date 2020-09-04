@@ -2,7 +2,6 @@
 *.o
 *.d
 .objs/
-*submission*.zip
 *starter*zip
 #zephyr_output
 

@@ -49,6 +49,10 @@
 int GridGraph::countEdges() const {
   int numEdges = 0;
 
+  for (const auto &kv : adjacencyMap) {
+    numEdges += kv.second.size();
+  }
+  numEdges /= 2;
   // =======================================================================
   // TODO: Your code here!
   // =======================================================================
@@ -65,42 +69,16 @@ int GridGraph::countEdges() const {
 // the graph.
 void GridGraph::removePoint(const IntPair& p1) {
 
-  // If the point p1 is not in the GridGraph, then do nothing and return.
-  // (We use GridGraph::hasPoint for convenience. GridGraph already has
-  //  various functions that may be useful. It's okay for class member
-  //  functions to delegate tasks to one another.)
   if (!hasPoint(p1)) return;
-
-  // All of p1's original neighboring points (that p1 was connected to with
-  // edges, implicitly) have their own NeighborSet entries in adjacencyMap,
-  // under their own point keys. You need to make sure that none of those
-  // original neighbors refer to p1 any more.
-  //
-  // To help you, we've made a value copy of the original set of adjacencies
-  // associated with this point. Note that the function GridGraph::removeEdge
-  // alters the adjacencyMap entries for both of its input arguments. In
-  // general, it can be dangerous business to add or remove items on an STL
-  // structure while iterating over it, because this is prone to programming
-  // mistakes. (When you tackle more advanced C++ projects in the future, you
-  // can think about how to optimize your code so no unnecessary copies are
-  // ever made, but the small speed benefits of that might not be worth the
-  // risk of making mistakes! Until then, it's okay to make working copies
-  // of small pieces of data like this.)
 
   const GridGraph::NeighborSet originalNeighbors = adjacencyMap.at(p1);
 
-  // =======================================================================
-  // TODO: Your code here!
-  // =======================================================================
+  for (const auto &p2 : originalNeighbors){
+    removeEdge(p1, p2);
+  }
 
-  // Finally, for the one point we are removing, erase the point key itself
-  // from adjacencyMap directly. (There is no other GridGraph helper function
-  // for this, because that's what we're implementing right now! We need to
-  // use adjacencyMap's own erase function directly to erase the key.)
-
-  // =======================================================================
-  // TODO: Your code here!
-  // =======================================================================
+  adjacencyMap.erase(p1);
+  
 }
 
 // =========================================================================
@@ -295,7 +273,7 @@ std::list<IntPair> graphBFS(const IntPair& start, const IntPair& goal, const Gri
     // TODO: Your code here!
     // We'll need to loop over the neighbors that are the points adjacent to curPoint.
     // Get a copy of the set of neighbors we're going to loop over.
-    GridGraph::NeighborSet neighbors; // Change this...
+    GridGraph::NeighborSet neighbors = graph.adjacencyMap.at(curPoint);
     // =====================================================================
 
     for (auto neighbor : neighbors) {
@@ -303,7 +281,7 @@ std::list<IntPair> graphBFS(const IntPair& start, const IntPair& goal, const Gri
       // ==================================================================
       // TODO: Your code here!
       // Check whether the neighbor has already been visited.
-      bool neighborWasAlreadyVisited = false; // Change this...
+      bool neighborWasAlreadyVisited = visitedSet.count(neighbor); // Change this...
       // ==================================================================
 
       // If this adjacent vertex has NOT been visited before, we will visit it now.
@@ -318,12 +296,15 @@ std::list<IntPair> graphBFS(const IntPair& start, const IntPair& goal, const Gri
         // since curPoint has just led to the discovery of this neighbor for
         // the first time.
         // ...
+        pred[neighbor] = curPoint;
 
         // Add neighbor to the visited set.
         // ...
+        visitedSet.insert(neighbor);
 
         // Push neighbor into the exploration queue.
         // ...
+        exploreQ.push(neighbor);
 
         // ================================================================
 
@@ -511,7 +492,7 @@ std::list<PuzzleState> puzzleBFS(const PuzzleState& start, const PuzzleState& go
     // We'll need to loop over the neighbors that are the points adjacent to curState.
     // We need a collection of neighbors we're going to loop over.
     
-    auto neighbors = {start}; // Change this! This line is totally wrong.
+    auto neighbors = curState.getAdjacentStates();
 
     // Hint: Look at PuzzleState.h
     // =====================================================================
@@ -521,7 +502,7 @@ std::list<PuzzleState> puzzleBFS(const PuzzleState& start, const PuzzleState& go
       // ==================================================================
       // TODO: Your code here!
       // Check whether the neighbor has already been visited.
-      bool neighborWasAlreadyVisited = false; // Change this...
+      bool neighborWasAlreadyVisited = visitedSet.count(neighbor);
       // ==================================================================
 
       if (!neighborWasAlreadyVisited) {
@@ -533,13 +514,13 @@ std::list<PuzzleState> puzzleBFS(const PuzzleState& start, const PuzzleState& go
         // since curState has just led to the discovery of this neighbor for
         // the first time.
         // ...
-
+        pred[neighbor] = curState;
         // Add neighbor to the visited set.
         // ...
-
+        visitedSet.insert(neighbor);
         // Push neighbor into the exploration queue.
         // ...
-
+        exploreQ.push(neighbor);
         // ================================================================
 
         dist[neighbor] = dist[curState]+1;

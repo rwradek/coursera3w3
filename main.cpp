@@ -81,7 +81,7 @@ void informalTests() {
 
   // The first-run welcome screen is meant to alert people that these
   // options exist.
-  constexpr bool showWelcome = true;
+  constexpr bool showWelcome = false;
   // You can view some demonstrations of the GridGraph class and read some
   // explanations. (See also the actual code in this file and the instructions PDF.)
   constexpr bool showDemonstrations = false;
@@ -89,7 +89,7 @@ void informalTests() {
   // (The output will be very verbose.)
   constexpr bool doEx1Tests = false;
   constexpr bool doEx2Tests = false;
-  constexpr bool doEx3Tests = false;
+  constexpr bool doEx3Tests = true;
   // Some of the tests may take a few seconds to process. If that is annoying,
   // you can temporarily disable them by setting this to false:
   constexpr bool doEx3SlowTests = true; // requires doEx3Tests == true
